@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user-service")
+@RequestMapping("/")
 public class UserController {
 
     private Environment env;  // yml 파일에서 값을 읽어오기 위한 객체
