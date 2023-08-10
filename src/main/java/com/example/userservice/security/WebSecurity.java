@@ -10,8 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.servlet.Filter;
-
 @Configuration
 @EnableWebSecurity
 public class WebSecurity extends WebSecurityConfigurerAdapter {
@@ -38,7 +36,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         http.csrf().disable(); //테스트를 위해 csrf 비활성
 //        http.authorizeRequests().antMatchers("/users/**").permitAll();
         http.authorizeRequests().antMatchers("/**")
-                .hasIpAddress("127.0.0.1") // ip 제한
+                .hasIpAddress("192.168.50.91") // ip 제한
                 .and()
                 .addFilter(getAuthenticationFilter()); // 로그인 인증 관련해서 작성한 AuthenticationFilter 적용
         http.headers().frameOptions().disable();
@@ -46,8 +44,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     }
 
     private AuthenticationFilter getAuthenticationFilter() throws Exception {
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter();
-        authenticationFilter.setAuthenticationManager(authenticationManager());
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager(), userService, env);
 
         return authenticationFilter;
     }

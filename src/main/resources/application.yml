@@ -26,3 +26,7 @@ eureka:
 
 greeting: # ??? ??? (??? ?)
   message: Welcome~~!!
+
+#token:
+#  expiration_time: 86400000 # 24시간
+#  secret: randomvalue # 암호화에 사용하는  임의의 키값
