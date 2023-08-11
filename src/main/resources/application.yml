@@ -27,6 +27,8 @@ eureka:
 greeting: # ??? ??? (??? ?)
   message: Welcome~~!!
 
-#token:
-#  expiration_time: 86400000 # 24시간
-#  secret: randomvalue # 암호화에 사용하는  임의의 키값
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans # refresh - configuration 정보를 refresh
