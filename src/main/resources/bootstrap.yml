@@ -2,6 +2,6 @@ spring:
   cloud:
     config:
       uri: http://127.0.0.1:8888
-      name: config-service
+      name: user-service # config service에서 읽어오는 설정파일의 위치에서 user-service란 이름의 설정파일을 읽어오도록 설정
 #  profiles:
 #    active: dev
