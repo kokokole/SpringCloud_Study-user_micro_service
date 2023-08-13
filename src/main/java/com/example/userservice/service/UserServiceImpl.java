@@ -1,5 +1,6 @@
 package com.example.userservice.service;
 
+import com.example.userservice.client.OrderServiceClient;
 import com.example.userservice.dto.UserDto;
 import com.example.userservice.jpa.UserEntity;
 import com.example.userservice.jpa.UserRepository;
@@ -31,13 +32,17 @@ public class UserServiceImpl implements UserService {
     RestTemplate restTemplate;
 
     Environment env;
+
+    OrderServiceClient orderServiceClient;
+
     @Autowired
     public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder,
-                           RestTemplate restTemplate, Environment env) {
+                           RestTemplate restTemplate, Environment env, OrderServiceClient orderServiceClient) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.restTemplate = restTemplate;
         this.env = env;
+        this.orderServiceClient = orderServiceClient;
     }
 
     @Override
@@ -65,14 +70,19 @@ public class UserServiceImpl implements UserService {
 
         UserDto userDto = new ModelMapper().map(userEntity, UserDto.class);
 
-        // Using as rest template 1
-        String orderUrl = String.format(env.getProperty("order_service.url"), userId); // config에서 읽어온 값에서 %s에는 userId가 넘겨짐
-        ResponseEntity<List<ResponseOrder>> orderListResponse =  restTemplate.exchange(orderUrl, HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<ResponseOrder>>() {
+        // Using as rest template
+//        String orderUrl = String.format(env.getProperty("order_service.url"), userId); // config에서 읽어온 값에서 %s에는 userId가 넘겨짐
+//        ResponseEntity<List<ResponseOrder>> orderListResponse =  restTemplate.exchange(orderUrl, HttpMethod.GET, null,
+//                new ParameterizedTypeReference<List<ResponseOrder>>() {
+//
+//        });
+//        List<ResponseOrder> orderList = orderListResponse.getBody();
+//Feign Client 사용으로 주석처리
 
-        });
+        // Useing a feign client
 
-        List<ResponseOrder> orderList = orderListResponse.getBody();
+        List<ResponseOrder> orderList = orderServiceClient.getOrders(userId);
+
         userDto.setOrders(orderList);
 
         return userDto;
