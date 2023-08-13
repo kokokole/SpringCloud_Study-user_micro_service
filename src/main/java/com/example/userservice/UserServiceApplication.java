@@ -1,5 +1,7 @@
 package com.example.userservice;
 
+import com.example.userservice.error.FeignErrorDecoder;
+import feign.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -24,11 +26,16 @@ public class UserServiceApplication {
         // (UserServiceImpl에서 BCryptPasswordEncoder를 사용하기 때문에 BCryptPasswordEncoder타입을 리턴함
         return new BCryptPasswordEncoder();
     }
-// FeignClient 사용하면 RestTemplate 안씀
+// FeignClien 사용하면 RestTemplate 안씀
     @Bean
     @LoadBalanced
     public RestTemplate getRestTemplate(){
         return new RestTemplate();
+    }
+
+    @Bean
+    public Logger.Level feignLoggerLevel(){ //Feign Client 로그설정
+        return Logger.Level.FULL;
     }
 
 }

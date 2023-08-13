@@ -2,9 +2,12 @@ package com.example.userservice.service;
 
 import com.example.userservice.client.OrderServiceClient;
 import com.example.userservice.dto.UserDto;
+import com.example.userservice.error.FeignErrorDecoder;
 import com.example.userservice.jpa.UserEntity;
 import com.example.userservice.jpa.UserRepository;
 import com.example.userservice.vo.ResponseOrder;
+import feign.FeignException;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.spi.MatchingStrategy;
@@ -25,6 +28,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     UserRepository userRepository;
@@ -79,10 +83,17 @@ public class UserServiceImpl implements UserService {
 //        List<ResponseOrder> orderList = orderListResponse.getBody();
 //Feign Client 사용으로 주석처리
 
-        // Useing a feign client
+//        List<ResponseOrder> orderList = null;
+//        // Feign exception handling
+//        try{
+//            // Using a feign client
+//            orderList = orderServiceClient.getOrders(userId);
+//        } catch(FeignException e){
+//            log.error(e.getMessage());
+//        }
+        // FeignErrorDecoder 사용으로 주석처리
 
         List<ResponseOrder> orderList = orderServiceClient.getOrders(userId);
-
         userDto.setOrders(orderList);
 
         return userDto;
