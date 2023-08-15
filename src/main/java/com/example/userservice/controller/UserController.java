@@ -6,6 +6,7 @@ import com.example.userservice.service.UserService;
 import com.example.userservice.vo.Greeting;
 import com.example.userservice.vo.RequestUser;
 import com.example.userservice.vo.ResponseUser;
+import io.micrometer.core.annotation.Timed;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.spi.MatchingStrategy;
@@ -36,6 +37,7 @@ public class UserController {
     }
 
     @GetMapping("/health_check")
+    @Timed(value="users.status", longTask = true) //micrometer 설정 추가
     public String status(){
         return String.format("It's Working in User Service" +
                 ", port(local.server.port)=" + env.getProperty("local.server.port") +
@@ -46,6 +48,7 @@ public class UserController {
     }
 
     @GetMapping("/welcome")
+    @Timed(value="users.welcome", longTask = true) //micrometer 설정 추가
     public String welcome(){
 //        return env.getProperty("greeting.message"); //yml 에서 greeting.message 값을 가져옴
         return greeting.getMessage(); // 클래스를 만들어서 greeting.message값을 주입받아 값을 가져옴
