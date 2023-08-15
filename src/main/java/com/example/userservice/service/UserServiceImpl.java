@@ -12,6 +12,8 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.spi.MatchingStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
@@ -39,14 +41,18 @@ public class UserServiceImpl implements UserService {
 
     OrderServiceClient orderServiceClient;
 
+    CircuitBreakerFactory circuitBreakerFactory;
+
     @Autowired
     public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder,
-                           RestTemplate restTemplate, Environment env, OrderServiceClient orderServiceClient) {
+                           RestTemplate restTemplate, Environment env, OrderServiceClient orderServiceClient,
+                           CircuitBreakerFactory circuitBreakerFactory) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.restTemplate = restTemplate;
         this.env = env;
         this.orderServiceClient = orderServiceClient;
+        this.circuitBreakerFactory = circuitBreakerFactory;
     }
 
     @Override
@@ -93,7 +99,12 @@ public class UserServiceImpl implements UserService {
 //        }
         // FeignErrorDecoder 사용으로 주석처리
 
-        List<ResponseOrder> orderList = orderServiceClient.getOrders(userId);
+
+//        List<ResponseOrder> orderList = orderServiceClient.getOrders(userId);
+        //CircuitBreaker 사용으로 ErrorEncoder 주석처리
+        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
+        List<ResponseOrder> orderList = circuitBreaker.run(() -> orderServiceClient.getOrders(userId),
+                throwable -> new ArrayList<>()); // 에러 발생 시 throwable -> new ArrayList<>()에 의해서 빈 리스트 반환
         userDto.setOrders(orderList);
 
         return userDto;
